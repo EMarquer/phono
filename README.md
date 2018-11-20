@@ -1,4 +1,19 @@
-# Automatic syllabification
+## Repository
+### Files
+*Nothing here yet*
+
+### TODO
+* [ ] find articles about *"syllabification theory based on the degree of sonority"*
+* [ ] create script for `VC transcription`
+* [ ] implement syllabification
+* [ ] analyse the data and answer the question
+* [ ] write report
+
+### Last updates
+*Nothing here yet*
+
+------
+# Automatic syllabification of French words
 ## Steps
 1. Learn about "syllabification theory based on the degree of sonority"
 2. Prepare a script that does the correspondance `word` -> `VC transcription` (see the definition bellow)
