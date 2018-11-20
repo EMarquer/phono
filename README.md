@@ -53,6 +53,7 @@ we can use shorter labels
 
 ## File format
 ### Input
+#### General format
 ```text
 word_1_letters word_1_phonetic
 word_2_letters word_2_phonetic
@@ -61,6 +62,11 @@ word_2_letters word_2_phonetic
 Each line correspond to a word and contains:
 * `word_n_letters`: the word in letters
 * `word_n_phonetic`: the word phonetic transcription in phonetic symbols
+
+#### Example
+```text
+abaisses abEs
+```
 
 ### Output
 ```text
@@ -75,6 +81,11 @@ Each line correspond to a word and contains:
 * `word_n_phonetic_VC`: the `VC transcription` of the phonetic symbols
 * `word_n_phonetic_syllable`: the word phonetic transcription in phonetic symbols, split in syllables
 * `word_n_phonetic_syllable_VC`: the `VC transcription` of the phonetic symbols, split in syllables
+
+#### Example
+```text
+abaisses VCVVCCVC abEs VCVC a-bEs V-CVC
+```
 
 ## Report / deliverables content
 > Describe the methodology used and the results obtained in a short text document (3 to 4 pages).\
