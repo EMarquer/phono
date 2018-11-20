@@ -18,13 +18,13 @@
 7. Write the report (see the dedicated section)
 
 ### Planning / Length estimation
-* [ ] 1. **?** 4~12 man.hour
-* [ ] 2. 2~3 man.hour
-* [ ] 3. 2~5 man.hour
-* [ ] 4. **? (depends on 1.)** 10~15 man.hour probably
-* [ ] 5. 1 man.hour
-* [ ] 6. 3~6 man.hour
-* [ ] 7. 8~20 man.hour
+1. **?** 4~12 man.hour
+2. 2~3 man.hour
+3. 2~5 man.hour
+4. **? (depends on 1.)** 10~15 man.hour probably
+5. 1 man.hour
+6. 3~6 man.hour
+7. 8~20 man.hour
 
 ## Definitions
 ### VC transcription
