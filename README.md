@@ -41,6 +41,18 @@
 6. 3~6 man.hour
 7. 8~20 man.hour
 
+### Affectation
+1. Léa
+2. Esteban
+3. Léa + Esteban
+4. Léa + Esteban
+5. Esteban
+6.
+    1. Esteban
+    2. Léa
+    3. Léa + Eseban
+7. Léa + Eseban
+
 ## Definitions
 ### VC transcription
 * `V` represents a vowel 
