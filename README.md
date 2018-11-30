@@ -1,16 +1,20 @@
 ## Repository
 ### Files
-*Nothing here yet*
+* `data`
+  * `test.cv`: CSV data to test `transcribe.py`
+  * `test_out.cv`: CSV data produced by `transcribe.py` on `test.cv`
+* `transcribe.py`: script to analyze the data in a file and produce expected output data in another file
 
 ### TODO
 * [ ] find articles about *"syllabification theory based on the degree of sonority"*
-* [ ] create script for `VC transcription`
+* [x] create script for `VC transcription`
 * [ ] implement syllabification
 * [ ] analyse the data and answer the question
 * [ ] write report
 
 ### Last updates
-*Nothing here yet*
+#### 2018/11/30
+Create script for `VC transcription 
 
 ------
 # Automatic syllabification of French words
