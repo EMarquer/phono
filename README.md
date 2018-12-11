@@ -6,8 +6,9 @@
 * `transcribe.py`: script to analyze the data in a file and produce expected output data in another file
 
 ### TODO
-* [ ] find articles about *"syllabification theory based on the degree of sonority"*
+* [x] find articles about *"syllabification theory based on the degree of sonority"*
 * [x] create script for `VC transcription`
+* [ ] store letters in external file
 * [ ] implement syllabification
 * [ ] analyse the data and answer the question
 * [ ] write report
@@ -81,6 +82,13 @@ Create script for `VC transcription
 Where `V` is voiced and `U` is unvoiced
 
 we can use shorter labels
+
+### Letter classification
+* Vowel (V)
+* Glides/semi-consonants/semi-vowels (C or V)
+* Liquids (C)
+* Oclusive fricatives (C)
+* Nasals (C)
 
 ## File format
 ### Input
