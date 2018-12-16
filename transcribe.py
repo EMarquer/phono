@@ -3,14 +3,20 @@ from typing import List
 
 import pandas as pd
 
-# File paths
-SOURCE_FILE = "data/test.cv"
-OUTPUT_FILE = "data/test_out.cv"
+from dictionaries import *
 
-# Dictionaries (will be loaded and saved to file)
-VOWEL_DICT = {letter for letter in 'aeiouy' + 'éèàù'}
-CONSONANT_DICT = {letter for letter in 'bcdfghjklmnpqrstvwxz' + 'ç'}
-NON_LETTER_DICT = {';'}
+
+# File paths
+SOURCE_FILE = "data/test.csv"
+OUTPUT_FILE = "data/test_out.csv"
+SOURCE_FILE = "data/Input_File.txt"
+OUTPUT_FILE = "data/Output_File.txt"
+
+# Dictionaries (loaded from specific file)
+TEXT_DICT = load_text()
+PHON_DICT = load_phon()
+TEXT_UNK = set()
+PHON_UNK = set()
 
 
 # Reading data
@@ -64,80 +70,40 @@ def save_data(data: List[List[str]], output_file: str = OUTPUT_FILE) -> None:
     pd.DataFrame(data).to_csv(output_file, sep=' ', header=None, index=False)
 
 
-# Managing unknown characters
-def categorise_new_char(char: str) -> None:
-    """Prompt the user to categorise a character, then add the caracter to the corresponding category
-
-    :param char: character to categorise
-    """
-
-    # Prompt for character category, until a valid category is given
-    choice = None
-
-    while not choice:
-        try:
-            # Ask for user input
-            choice = input("The character '{}' is unknown. Is it a:"
-                           "\n(C) Consonant\n(V) Vowel\n(N) Not a letter"
-                           "\n(Please input the letter in parenthesis corresponding to the correct answer):\n".
-                           format(char))
-
-            choice = choice.strip().lower()
-
-            # Check validity of the input
-            if choice not in {'c', 'v', 'n'}:
-                raise ValueError
-
-        # Manage value errors
-        except ValueError:
-            print("Invalid input")
-            choice = None
-
-    # Add the letter to the dictionary corresponding to the selected category
-    {'c': CONSONANT_DICT,
-     'v': VOWEL_DICT,
-     'n': NON_LETTER_DICT}[choice].add(char)
-
-
-# Produce the CV representation of a character & prompt if character is unknown
-def char_to_cv(char: str) -> str:
+# Produce the CV representation of a text character
+def text_to_cv(char: str) -> str:
     """Produce the CV representation of a character and ask the user to categorise the character if it is unknown
     (using :code:`categorise_new_char()`)
 
     :param char: character to transform to CV representation
-    :return: the CV representation of the character (either 'C', 'V' or the character itself if it is not a letter)
+    :return: the CV representation of the character (either 'C', 'V' or the character itself if it is not a known character)
     """
 
-    # We know the character and it is a vowel
-    if char in VOWEL_DICT:
-        return 'V'
+    for cv_category, letters in TEXT_DICT.items():
+        if char in letters:
+            return cv_category
 
-    # We know the character and it is a consonant
-    elif char in CONSONANT_DICT:
-        return 'C'
+    # If the character is not found, return it and save it as unknown
+    TEXT_UNK.add(char)
+    return char
 
-    # We know the character and it is a non-letter character
-    elif char in NON_LETTER_DICT:
-        return char
+# Produce the CV representation of a text character
+def phon_to_cv(char: str) -> str:
+    """Produce the CV representation of a character and ask the user to categorise the character if it is unknown
+    (using :code:`categorise_new_char()`)
 
-    # We do not know the character
-    else:
-
-        # We categorise the letter
-        categorise_new_char(char)
-
-        # We get the correct value for the letter
-        return char_to_cv(char)
-
-
-# Producing the CV representation for a word
-def word_to_cv(word: str) -> str:
-    """Produce the CV representation of word
-
-    :param word: a word (or a phonetic representation of a word)
-    :return: a CV version of the word
+    :param char: character to transform to CV representation
+    :return: the CV representation of the character (either 'C', 'V' or the character itself if it is not a known character)
     """
-    return ''.join(char_to_cv(char) for char in word.lower())
+
+    for cv_category, phon_category_dict in PHON_DICT.items():
+        for phon_category, letters in phon_category_dict.items():
+            if char in letters:
+                return cv_category
+
+    # If the character is not found, return it and save it as unknown
+    PHON_UNK.add(char)
+    return char
 
 
 # Line by line processing
@@ -159,9 +125,9 @@ def process_line(line: List[str]) -> List[str]:
 
     return [
         word,  # Word
-        word_to_cv(word),  # Word in CV
+        ''.join(text_to_cv(char) for char in word),  # Word in CV
         phone,  # Phonetic representation
-        word_to_cv(phone),  # Phonetic representation in CV
+        ''.join(phon_to_cv(char) for char in phone),  # Phonetic representation in CV
         # Phonetic syllable
         # Phonetic syllable in CV
     ]
@@ -181,11 +147,17 @@ def line_to_str(line: List[str]) -> str:
     length = len(line)
 
     # print diferent things depending on the values
+    # untreated data
     if length == 2:
         return "{0}, {1}".format(*line)
 
+    # data without sylabification
     elif length == 4:
         return "{0} -> {1}, {2} -> {3}".format(*line)
+
+    # data with sylabification
+    elif length == 6:
+        return "{0} -> {1} ({4}), {2} -> {3} ({5})".format(*line)
 
     raise ValueError("Wrong line length")
 
@@ -196,5 +168,8 @@ if __name__=="__main__":
     data = [process_line(line) for line in load_data()]
 
     print(*(line_to_str(line) for line in data), sep="\n")
+
+    print("Unknown TEXT chars:", *TEXT_UNK)
+    print("Unknown PHON chars:", *PHON_UNK)
 
     save_data(data)
