@@ -7,8 +7,8 @@ from dictionaries import *
 
 
 # File paths
-#SOURCE_FILE = "data/test.csv"
-#OUTPUT_FILE = "data/test_out.csv"
+SOURCE_FILE = "data/test.csv"
+OUTPUT_FILE = "data/test_out.csv"
 SOURCE_FILE = "data/Input_File.txt"
 OUTPUT_FILE = "data/Output_File.txt"
 
@@ -200,7 +200,7 @@ def determine_syllable_components(chars: str, cv_form: str) -> List[Tuple[str, s
 
                 # We remove the first character of the onset
                 onset = onset[1:]
-                onset_cv += onset_cv[1:]
+                onset_cv = onset_cv[1:]
 
             components.append((CODA, coda, coda_cv))
             components.append((ONSET, onset, onset_cv))
