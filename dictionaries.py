@@ -52,7 +52,10 @@ def load_phon(source_file: str = PHON_FILE) -> Dict[str, Dict[str, Set[str]]]:
 
     # Transform the data into a dictionary
     phon_dict = {}
-    for cv_category, phon_category, letters in phon_data:
+    for cv_category, phon_rank, phon_category, letters in phon_data:
+
+        # Create a single key for phonetic classification
+        phon_key = (phon_rank, phon_category)
 
         # Make shure the dictionary contatins a value for the CV category
         if not cv_category in phon_dict.keys():
@@ -63,7 +66,7 @@ def load_phon(source_file: str = PHON_FILE) -> Dict[str, Dict[str, Set[str]]]:
         # and add the new letters to the category
         # If no letter was in the category, `get` will return an empty set
         # With sets, the `|` operator is the 'union' operator
-        phon_dict[cv_category][phon_category] = phon_dict[cv_category].get(phon_category, set()) | set(letters)
+        phon_dict[cv_category][phon_key] = phon_dict[cv_category].get(phon_key, set()) | set(letters)
 
     return phon_dict
 

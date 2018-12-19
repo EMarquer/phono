@@ -1,9 +1,8 @@
-C FricV vzZR
-C FricU fsSh
-C StopV bdg
-C StopC ptk
-C Nasal mnNG
-C Liquid l
-V Vowel *Eea92iyuoO
-V Glides wj8
-V Nasal @51
+C 1 FricV vzZR
+C 1 FricU fsSh
+C 0 StopV bdg
+C 0 StopU ptk
+C 2 Nasal mnNG
+C 3 Liquid l
+V 4 Vowel *Eea92iyuoO@51
+V 4 Glides wj8
