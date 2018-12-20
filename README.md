@@ -8,14 +8,10 @@
 ### TODO
 * [x] find articles about *"syllabification theory based on the degree of sonority"*
 * [x] create script for `VC transcription`
-* [ ] store letters in external file
-* [ ] implement syllabification
+* [x] store letters in external file
+* [x] implement syllabification
 * [ ] analyse the data and answer the question
 * [ ] write report
-
-### Last updates
-#### 2018/11/30
-Create script for `VC transcription 
 
 ------
 # Automatic syllabification of French words
