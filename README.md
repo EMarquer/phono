@@ -1,16 +1,22 @@
 ## Repository
 ### Files
 * `data`
-  * `test.cv`: CSV data to test `transcribe.py`
-  * `test_out.cv`: CSV data produced by `transcribe.py` on `test.cv`
-* `transcribe.py`: script to analyze the data in a file and produce expected output data in another file
+  * `test.csv`: CSV data (with space separator) to test `transcribe.py`
+  * `test_out.csv`: CSV data (with space separator) produced by `transcribe.py` on `test.csv`
+  * `Input_File.txt`: CSV data (with space separator) used as input for `transcribe.py` to syllabify the words in French
+  * `Output_File.txt`: CSV data (with space separator) produced by `transcribe.py` on `Input_File.txt`
+* `dictionaries.py`: all the functions needed to manipulate the letters, phonemes, sonority scale, and phonological categories
+* `transcribe.py`: script to process the data in a file and produce expected output data (CV forms and syllabification) in another file
+* `stats.py`: script to analyze the data in a file outputed by `transcribe.py` and produce produce the answers to the questions asked in the instructions
+* `letters_text.csv`: file containing the letters of french words and classifying them into C or V
+* `letters_phon.csv`: file containing the phonological character of french words and classifying them into C or V and assigning them to one of the categories of the sonority scale; it also affect to each of those categories their rank in the scale
 
 ### TODO
 * [x] find articles about *"syllabification theory based on the degree of sonority"*
 * [x] create script for `VC transcription`
 * [x] store letters in external file
 * [x] implement syllabification
-* [ ] analyse the data and answer the question
+* [x] analyse the data and answer the questions
 * [ ] write report
 
 ------
