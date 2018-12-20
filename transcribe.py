@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Generator
 
 import pandas as pd
 
@@ -7,22 +7,15 @@ from dictionaries import *
 
 
 # File paths
-SOURCE_FILE = "data/test.csv"
-OUTPUT_FILE = "data/test_out.csv"
 SOURCE_FILE = "data/Input_File.txt"
 OUTPUT_FILE = "data/Output_File.txt"
-
-# Dictionaries (loaded from specific file)
-TEXT_DICT = load_text()
-PHON_DICT = load_phon()
-TEXT_UNK = set()
-PHON_UNK = set()
 
 # Keys for the syllabification algorithm
 ONSET, NUCLEUS, CODA = "onset", "nucleus", "coda"
 
 SYLLABLE_SEPARATOR = "-"
-PHON_SEPARATOR = ";"  # TODO not mannaged yet
+PHON_SEPARATOR = ";"
+
 
 # Reading data
 def load_data(source_file: str = SOURCE_FILE) -> List[List[str]]:
@@ -75,80 +68,35 @@ def save_data(data: List[List[str]], output_file: str = OUTPUT_FILE) -> None:
     pd.DataFrame(data).to_csv(output_file, sep=' ', header=None, index=False)
 
 
-# Produce the CV representation of a text character
-def text_to_cv(char: str) -> str:
-    """Produce the CV representation of a letter.
-    If the character is unknown, returns the character itself and store it in a TEXT_UNK dictionnary to keep track of
-    unrecognised letters.
-
-    :param char: character to transform to CV representation
-    :return: the CV representation of the character (either 'C', 'V' or the character itself if it is not a known character)
-    """
-
-    for cv_category, letters in TEXT_DICT.items():
-        if char in letters:
-            return cv_category
-
-    # If the character is not found, return it and save it as unknown
-    TEXT_UNK.add(char)
-    return char
-
-
-# Produce the CV representation of a text character
-def phon_to_cv(char: str) -> str:
-    """Produce the CV representation of a phonetic character.
-    If the character is unknown, returns the character itself and store it in a PHON_UNK dictionnary to keep track of
-    unrecognised characters.
-
-    :param char: character to transform to CV representation
-    :return: the CV representation of the character (either 'C', 'V' or the character itself if it is not a known character)
-    """
-
-    for cv_category, phon_category_dict in PHON_DICT.items():
-        for phon_category, letters in phon_category_dict.items():
-            if char in letters:
-                return cv_category
-
-    # If the character is not found, return it and save it as unknown
-    PHON_UNK.add(char)
-    return char
-
-
-# Get the rank according to the sonority scale
-def phon_to_rank(char: str) -> int:
-    """Get the rank of a phonetic character according to the sonority scale.
-    If the character is unknown, returns -1 and store it in a PHON_UNK dictionnary to keep track of
-    unrecognised characters.
-
-    :param char: character to transform to CV representation
-    :return: the rank of the character according to the scale (or -1 if it is not a known character)
-    """
-
-    for cv_category, phon_category_dict in PHON_DICT.items():
-        for phon_category, letters in phon_category_dict.items():
-            if char in letters:
-                return phon_category[0]
-
-    # If the character is not found, return it and save it as unknown
-    PHON_UNK.add(char)
-    return -1
-
-
+# Syllabification - Checking if an onset respect the sonority criteria
 def is_onset_legal(chars: str) -> bool:
-    #criteria: >= 2
+    """Check if an onset respect the sonority criteria (difference in rank in the sonority scale >= 2)
+
+    :param chars: characters composing the onset to test
+    :return: True if all pairs of adjacent characters in the onset have a difference of rank of at least 2, False
+    otherwise
+    """
 
     return all(abs(phon_to_rank(chars[i]) - phon_to_rank(chars[i + 1])) > 1
                for i in range(len(chars) - 1))
 
 
 def determine_syllable_components(chars: str, cv_form: str) -> List[Tuple[str, str, str]]:
-    # ---------------
-    # Begin algorithm
-    # ---------------
+    """Syllabification algorithm
+    (from the article "On the Syllabification of Phonemes", by Susan Bartlett, Grzegorz Kondrak and Colin Cherry)
+
+    :param chars: phonetic characters corresponding to the representation of the word
+    :param cv_form: CV-form of the word
+    :return: the sequence of onsets, nuclei and codas as a list of tuples with the type of element ("onset", "nucleus"
+    or "coda"), the corresponding characters, and the CV form of the characters
+
+    >>> determine_syllable_components("po", "CV")
+    [("onset", "p", "C"), ("nucleus", "o", "V")]
+    """
 
     # We store the sequence of onsets, nuclei and codas as a list of tuples with the type of element ("onset", "nucleus"
-    # or "coda"), the corresponding characters
-    # ex: [("onset", "p", "C"), ("coda", "o", "V")]
+    # or "coda"), the corresponding characters, and the CV form of the characters
+    # ex: [("onset", "p", "C"), ("nucleus", "o", "V")]
     components = []
 
     # Store position of current character and length of the word
@@ -209,11 +157,25 @@ def determine_syllable_components(chars: str, cv_form: str) -> List[Tuple[str, s
 
 
 def concat_syllable_components(components: List[Tuple[str, str, str]]) -> Tuple[str, str]:
+    """Concatenates syllabic components
 
+    :param components: the sequence of onsets, nuclei and codas as a list of tuples with the type of element ("onset",
+    "nucleus" or "coda"), the corresponding characters, and the CV form of the characters
+    :return: the syllabified phonetic representation and the equivalent in CV; all the syllables are in a single string,
+    linked by a dash ("-")
+
+    >>> concat_syllable_components([('nucleus', 'a', 'V'), ('onset', 'b', 'C'), ('nucleus', 'E', 'V'), ('coda', 's', 'C')])
+    (a-bEs, V-CVC)
+    """
     # we suppose that the componants follow the construction rules
 
-    def syllables():
-        """Generator of syllables over the components"""
+    def syllables() -> Generator[Tuple[str, str], None, None]:
+        """Generator of syllables over the components
+        Generates syllables from the components, and yields them one at a time
+
+        :yield: tuples corresponding to a syllable, with the phonetic writing of the syllable followed by the equivalent
+        CV form
+        """
         syllable_phon, syllable_cv = "", ""
         previous_component = None
 
@@ -252,16 +214,20 @@ def concat_syllable_components(components: List[Tuple[str, str, str]]) -> Tuple[
 def syllabify(chars: str, cv_form: Optional[str] = "") -> Tuple[str, str]:
     """Find the correct syllabification for a word using the phonetic scale theory and the maximal onset principle.
 
-    Using the algorythm for the article "On the Syllabification of Phonemes", by Susan Bartlett, Grzegorz Kondrak and
+    Uses the algorithm from the article "On the Syllabification of Phonemes", by Susan Bartlett, Grzegorz Kondrak and
     Colin Cherry
 
-    :not supported: multiple phonetic representations concatenated with a `;`
+    :supported: multiple phonetic representations concatenated with a `;` are split, syllabified independently, then
+    concatenated with `;` once again
 
     :param chars: phonetic characters corresponding to the representation of the word
     :param cv_form: optional argument for the CV-form of the word, if not provided it will be computed from provided
     characters
     :return: the syllabified phonetic representation and the equivalent in CV; all the syllables are in a single string,
-    linked by a dash ("-", ex: "pomiE" -> "po-mi-E", "CV-CV-V")
+    linked by a dash ("-")
+
+    >>> syllabify("pomiE")
+    ("po-mi-E", "CV-CV-V")
     """
 
     # manage multiple phonetic representations concatenated
@@ -299,12 +265,13 @@ def process_line(line: List[str]) -> List[str]:
     :todo: add support for multi-representations of words
 
     :param line: List of string:
-
-    >>>['word', 'phonetic representation']
-
     :return: processed version of the word:
 
-    >>>['word', 'word in CV', 'phonetic representation', 'phonetic in CV']
+    >>> process_line(['word', 'phonetic representation'])
+    ['word', 'word in CV', 'phonetic representation', 'phonetic in CV', 'phonetic syllables', 'syllables in CV']
+
+    >>> process_line(['zooxanthelles', 'zOOks@tEl'])
+    ['zooxanthelles', 'CVVCVCCCVCCVC', 'zOOks@tEl', 'CVVCCVCVC', 'zO-Ok-s@-tEl', 'CV-VC-CV-CVC']
     """
     word, phone = line
 
@@ -319,13 +286,11 @@ def process_line(line: List[str]) -> List[str]:
 
 # Line by line printing
 def line_to_str(line: List[str]) -> str:
-    """Represent a line as a string (only 2 elements and 4 elements lines are supported)
-
-    :todo: adapt for syllabification
+    """Represent a line as a string (only 2 elements, 4 elements and 6 elements lines are supported)
 
     :param line: line to representing as a string
     :return: string representing the line
-    :raise ValueError: if the line does not contain 2 or 4 elements
+    :raise ValueError: if the line does not contain 2, 4 or 6 elements
     """
     # store length because it wil e used multiple times
     length = len(line)
@@ -335,26 +300,28 @@ def line_to_str(line: List[str]) -> str:
     if length == 2:
         return "{0}, {1}".format(*line)
 
-    # data without sylabification
+    # data without syllabification
     elif length == 4:
         return "{0} -> {1}, {2} -> {3}".format(*line)
 
-    # data with sylabification
+    # data with syllabification
     elif length == 6:
-        return "{0} -> {1}, {2} -> {3} ({4} -> {5})".format(*line)
+        return "{0} ({1}): {2} ({3}) -> {4} ({5})".format(*line)
 
     raise ValueError("Wrong line length")
 
 
-if __name__=="__main__":
-    data = load_data()
-
+if __name__ == "__main__":
+    # load and process the data
     data = [process_line(line) for line in load_data()]
 
+    # print the processed lines
     print(*(line_to_str(line) for line in data), sep="\n")
 
+    # we remove the PHON_SEPARATOR, as we know it is nor really an "unknown" character
     PHON_UNK.discard(PHON_SEPARATOR)
     print("Unknown TEXT chars:", *TEXT_UNK)
     print("Unknown PHON chars:", *PHON_UNK)
 
+    # saves the output file
     save_data(data)

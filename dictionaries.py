@@ -5,8 +5,8 @@ import pandas as pd
 
 
 # File path
-PHON_FILE="letters_phon.csv"
-TEXT_FILE="letters_text.csv"
+PHON_FILE = "letters_phon.csv"
+TEXT_FILE = "letters_text.csv"
 
 
 def load_text(source_file: str = TEXT_FILE) -> Dict[str, Set[str]]:
@@ -61,7 +61,6 @@ def load_phon(source_file: str = PHON_FILE) -> Dict[str, Dict[str, Set[str]]]:
         if not cv_category in phon_dict.keys():
             phon_dict[cv_category] = dict()
 
-
         # Get the set of letters already in the phonologic category
         # and add the new letters to the category
         # If no letter was in the category, `get` will return an empty set
@@ -71,6 +70,65 @@ def load_phon(source_file: str = PHON_FILE) -> Dict[str, Dict[str, Set[str]]]:
     return phon_dict
 
 
+# Produce the CV representation of a text character
+def text_to_cv(char: str) -> str:
+    """Produce the CV representation of a letter.
+    If the character is unknown, returns the character itself and store it in a TEXT_UNK dictionnary to keep track of
+    unrecognised letters.
+
+    :param char: character to transform to CV representation
+    :return: the CV representation of the character (either 'C', 'V' or the character itself if it is not a known character)
+    """
+
+    for cv_category, letters in TEXT_DICT.items():
+        if char in letters:
+            return cv_category
+
+    # If the character is not found, return it and save it as unknown
+    TEXT_UNK.add(char)
+    return char
+
+
+# Produce the CV representation of a text character
+def phon_to_cv(char: str) -> str:
+    """Produce the CV representation of a phonetic character.
+    If the character is unknown, returns the character itself and store it in a PHON_UNK dictionnary to keep track of
+    unrecognised characters.
+
+    :param char: character to transform to CV representation
+    :return: the CV representation of the character (either 'C', 'V' or the character itself if it is not a known character)
+    """
+
+    for cv_category, phon_category_dict in PHON_DICT.items():
+        for phon_category, letters in phon_category_dict.items():
+            if char in letters:
+                return cv_category
+
+    # If the character is not found, return it and save it as unknown
+    PHON_UNK.add(char)
+    return char
+
+
+# Get the rank according to the sonority scale
+def phon_to_rank(char: str) -> int:
+    """Get the rank of a phonetic character according to the sonority scale.
+    If the character is unknown, returns -1 and store it in a PHON_UNK dictionnary to keep track of
+    unrecognised characters.
+
+    :param char: character to transform to CV representation
+    :return: the rank of the character according to the scale (or -1 if it is not a known character)
+    """
+
+    for cv_category, phon_category_dict in PHON_DICT.items():
+        for phon_category, letters in phon_category_dict.items():
+            if char in letters:
+                return phon_category[0]
+
+    # If the character is not found, return it and save it as unknown
+    PHON_UNK.add(char)
+    return -1
+
+
 if __name__=="__main__":
     import pprint as pp
 
@@ -78,3 +136,11 @@ if __name__=="__main__":
 
     printer.pprint(load_text())
     printer.pprint(load_phon())
+
+# If imported
+else:
+    # Dictionaries (loaded from specific file)
+    TEXT_DICT = load_text()
+    PHON_DICT = load_phon()
+    TEXT_UNK = set()
+    PHON_UNK = set()
