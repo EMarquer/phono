@@ -1,13 +1,13 @@
 ## Repository
 ### Files
-* `data`
+* `data`: the folder where the inputs and outputs of the scripts are stored
   * `test.csv`: CSV data (with space separator) to test `transcribe.py`
   * `test_out.csv`: CSV data (with space separator) produced by `transcribe.py` on `test.csv`
   * `Input_File.txt`: CSV data (with space separator) used as input for `transcribe.py` to syllabify the words in French
   * `Output_File.txt`: CSV data (with space separator) produced by `transcribe.py` on `Input_File.txt`
 * `dictionaries.py`: all the functions needed to manipulate the letters, phonemes, sonority scale, and phonological categories
 * `transcribe.py`: script to process the data in a file and produce expected output data (CV forms and syllabification) in another file
-* `stats.py`: script to analyze the data in a file outputed by `transcribe.py` and produce produce the answers to the questions asked in the instructions
+* `stats.py`: script to analyze the data in a file outputted by `transcribe.py` and produce produce the answers to the questions asked in the instructions
 * `letters_text.csv`: file containing the letters of french words and classifying them into C or V
 * `letters_phon.csv`: file containing the phonological character of french words and classifying them into C or V and assigning them to one of the categories of the sonority scale; it also affect to each of those categories their rank in the scale
 
