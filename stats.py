@@ -117,6 +117,10 @@ if __name__ == "__main__":
 
     # print the result
     print("Question 1")
+    print("(total forms: {}, total different forms: {})".format(
+        len(syllables_cv),
+        len(Counter(syllables_cv).keys())
+    ))
     pp.pprint(syllables_cv_most_frequent)
 
     # question 2 - phonetic classes
@@ -128,6 +132,10 @@ if __name__ == "__main__":
 
     # print the result
     print("Question 2")
+    print("(total forms: {}, total different forms: {})".format(
+        len(syllables_class),
+        len(Counter(syllables_class).keys())
+    ))
     pp.pprint(syllables_class_most_frequent)
 
     # question 3 - phonetic constituents
@@ -139,4 +147,8 @@ if __name__ == "__main__":
 
     # print the result
     print("Question 3")
+    print("(total forms: {}, total different forms: {})".format(
+        len(syllables_phon),
+        len(Counter(syllables_phon).keys())
+    ))
     pp.pprint(syllables_phon_most_frequent)
